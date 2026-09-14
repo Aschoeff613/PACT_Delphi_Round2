@@ -19,6 +19,9 @@ const ROW_HEIGHT = 64;
 const ROW_GAP = 8;
 const STRIDE = ROW_HEIGHT + ROW_GAP;
 
+/** Pointer travel, in px, past which a press counts as a drag, not a click. */
+const DRAG_THRESHOLD = 4;
+
 function moveItem<T>(items: T[], from: number, to: number): T[] {
   const next = [...items];
   const [item] = next.splice(from, 1);
@@ -54,6 +57,12 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
 
   const rowRefs = useRef(new Map<string, HTMLLIElement>());
 
+  // A press on the task name can become either a drag or a click-to-pin. These
+  // tell the two apart: once the pointer travels past DRAG_THRESHOLD it is a
+  // drag, and the click that the browser fires on release is then ignored.
+  const dragMoved = useRef(false);
+  const suppressClick = useRef(false);
+
   const registerRow = useCallback((code: string, node: HTMLLIElement | null) => {
     if (node) rowRefs.current.set(code, node);
     else rowRefs.current.delete(code);
@@ -63,8 +72,12 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
    * Offsets during a drag are applied directly to the DOM rather than through
    * React state, so a pointermove costs a transform and nothing else.
    */
-  const paintOffsets = useCallback((fromIndex: number, toIndex: number, dragOffset: number) => {
-    const current = order;
+  const paintOffsets = useCallback((
+    current: RankingTask[],
+    fromIndex: number,
+    toIndex: number,
+    dragOffset: number
+  ) => {
     current.forEach((task, index) => {
       const node = rowRefs.current.get(task.taskCode);
       if (!node) return;
@@ -82,7 +95,7 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
 
       node.style.transform = shift === 0 ? "" : `translateY(${shift}px)`;
     });
-  }, [order]);
+  }, []);
 
   /**
    * Drop the offsets without animating them.
@@ -107,79 +120,80 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
   }, []);
 
   const handlePointerDown = useCallback((event: React.PointerEvent, index: number) => {
-    // Ignore secondary buttons and clicks on the disclosure control.
+    // Ignore secondary buttons.
     if (event.button !== 0) return;
 
     const task = order[index];
     const node = rowRefs.current.get(task.taskCode);
     if (!node) return;
 
-    // The popout is position: fixed, so it never changes row height and the
-    // STRIDE maths hold -- but leaving it open mid-drag would have it hang over
-    // a list that is moving underneath it.
-    setHovered(null);
-    setPinned(null);
+    // The order is fixed for the life of a drag -- the drag is what changes it
+    // -- so capture it here rather than reading changing state from a closure.
+    const captured = order;
 
+    dragMoved.current = false;
     (event.target as HTMLElement).setPointerCapture?.(event.pointerId);
 
-    drag.current = {
+    const state = {
       code: task.taskCode,
       startIndex: index,
       currentIndex: index,
       pointerStartY: event.clientY,
       offsetY: 0
     };
+    drag.current = state;
     setDragCode(task.taskCode);
-  }, [order]);
 
-  useEffect(() => {
-    if (!dragCode) return;
-
-    const onMove = (event: PointerEvent) => {
-      const state = drag.current;
-      if (!state) return;
-
-      const delta = event.clientY - state.pointerStartY;
+    const onMove = (moveEvent: PointerEvent) => {
+      const delta = moveEvent.clientY - state.pointerStartY;
       state.offsetY = delta;
 
+      if (!dragMoved.current && Math.abs(delta) > DRAG_THRESHOLD) {
+        dragMoved.current = true;
+      }
+
       // Which slot the bar's centre is now over.
-      const slots = order.length;
       const target = Math.min(
-        slots - 1,
+        captured.length - 1,
         Math.max(0, state.startIndex + Math.round(delta / STRIDE))
       );
 
       state.currentIndex = target;
-      paintOffsets(state.startIndex, target, delta);
+      paintOffsets(captured, state.startIndex, target, delta);
     };
 
     const onUp = () => {
-      const state = drag.current;
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+
       drag.current = null;
       setDragCode(null);
       clearOffsets();
 
-      if (!state) return;
+      if (dragMoved.current) {
+        // The press became a drag, so the click the browser fires on release
+        // is not a request to pin anything.
+        suppressClick.current = true;
+        setHovered(null);
+        setPinned(null);
+      }
+
       if (state.currentIndex === state.startIndex) return;
 
-      const task = order[state.startIndex];
       setOrder((current) => moveItem(current, state.startIndex, state.currentIndex));
       setDirty(true);
       setSaveState("idle");
       setAnnouncement(
-        `${task.title} moved to position ${state.currentIndex + 1} of ${order.length}.`
+        `${task.title} moved to position ${state.currentIndex + 1} of ${captured.length}.`
       );
     };
 
+    // Attached now, synchronously, so no release can be missed.
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
-    };
-  }, [dragCode, order, paintOffsets, clearOffsets]);
+  }, [order, paintOffsets, clearOffsets]);
 
   /**
    * Keyboard and button moves. Dragging 17 bars with a pointer is not the only
@@ -372,7 +386,9 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
                       className="rank-name"
                       aria-expanded={isOpen}
                       aria-describedby={isOpen ? `popout-${task.taskCode}` : undefined}
-                      onPointerDown={(event) => event.stopPropagation()}
+                      /* No stopPropagation: the press reaches the bar, so a
+                         task name can be dragged like any other part of it.
+                         Release without travel still counts as a click. */
                       onPointerEnter={(event) => {
                         // Touch fires pointerenter immediately before the click
                         // that pins; only hover should open transiently.
@@ -386,6 +402,10 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
                         if (pinned !== task.taskCode) closePopout();
                       }}
                       onClick={() => {
+                        if (suppressClick.current) {
+                          suppressClick.current = false;
+                          return;
+                        }
                         if (pinned === task.taskCode) {
                           setPinned(null);
                           closePopout();
@@ -491,12 +511,6 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
           role="tooltip"
           className={`rank-popout${pinned === activeTask.taskCode ? " is-pinned" : ""}`}
           style={{ top: popoutPos.top, left: popoutPos.left, width: POPOUT_WIDTH }}
-          // Hovering the card itself keeps it open, so a pinned card can be
-          // scrolled and read without the pointer having to stay on the name.
-          onPointerEnter={() => setHovered(activeTask.taskCode)}
-          onPointerLeave={() => {
-            if (pinned !== activeTask.taskCode) closePopout();
-          }}
         >
           <p className="rank-popout-title">
             <span className="rank-code">{activeTask.taskCode}</span>
@@ -516,8 +530,19 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
           </div>
 
           {pinned === activeTask.taskCode ? (
-            <p className="rank-popout-foot">Click the task name again, or press Esc, to close.</p>
-          ) : null}
+            <button
+              type="button"
+              className="rank-popout-close"
+              onClick={() => {
+                setPinned(null);
+                closePopout();
+              }}
+            >
+              Close
+            </button>
+          ) : (
+            <p className="rank-popout-foot">Click the task name to keep this open.</p>
+          )}
         </div>
       ) : null}
 
