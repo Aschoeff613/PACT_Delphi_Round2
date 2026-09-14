@@ -1,0 +1,902 @@
+:root {
+  --bg: #030712;
+  --bg-soft: #0b1220;
+  --paper: #111827;
+  --panel: #0f172a;
+  --panel-elevated: #151f33;
+  --ink: #f8fafc;
+  --muted: #94a3b8;
+  --border: #243041;
+  --accent: #8c1515;
+  --accent-dark: #651010;
+  --accent-light: #b83a3a;
+  --accent-soft: rgba(140, 21, 21, 0.18);
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --completed: #22c55e;
+  --progress: #8c1515;
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(140, 21, 21, 0.2), transparent 20%),
+    linear-gradient(180deg, #020617 0%, #030712 100%);
+  color: var(--ink);
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  padding: 14px 20px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding: 10px 18px;
+  border: 1px solid rgba(36, 48, 65, 0.92);
+  border-radius: 16px;
+  border-top: 3px solid var(--accent);
+  background: linear-gradient(180deg, rgba(10, 15, 28, 0.98), rgba(11, 18, 32, 0.94));
+  box-shadow: var(--shadow);
+}
+
+.brand-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent-light);
+  margin-bottom: 4px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: clamp(1.3rem, 1.6vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.brand p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  max-width: 760px;
+  font-size: 0.82rem;
+}
+
+.hero {
+  padding: 28px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(36, 48, 65, 0.95);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.hero-tagline {
+  font-size: 1.05rem;
+  color: var(--accent-light) !important;
+  font-weight: 500;
+  margin-bottom: 10px !important;
+}
+
+.hero-instructions {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* ---------------------------------------------------------------------------
+   Round 2 — ranking board
+   17 full-width bars in a vertical stack, dragged to reorder. Row geometry is
+   duplicated in components/ranking-board.tsx (ROW_HEIGHT, ROW_GAP): the drag
+   maths needs the stride in px, so these two must be changed together.
+   --------------------------------------------------------------------------- */
+
+
+.rank-hero .rank-title {
+  margin: 2px 0 6px;
+  font-size: clamp(1.3rem, 1.8vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.rank-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 18px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+.rank-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rank-row {
+  /* Rows animate to their new slot after a drop, but never while the pointer
+     is down -- transitioning the dragged bar would make it lag the cursor. */
+  transition: transform 0.18s cubic-bezier(0.2, 0.7, 0.3, 1);
+  touch-action: none;
+}
+
+.rank-row.is-dragging {
+  position: relative;
+  z-index: 5;
+  transition: none;
+}
+
+.rank-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  padding: 0 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  cursor: grab;
+  user-select: none;
+}
+
+.rank-row.is-dragging .rank-bar {
+  cursor: grabbing;
+  border-color: var(--accent-light);
+  background: var(--panel-elevated);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.5);
+}
+
+.rank-bar:hover {
+  border-color: rgba(184, 58, 58, 0.5);
+}
+
+/* Length encodes position: longest at rank 1, shortest at rank 17, so the
+   stack reads as a shape and not only as a column of numbers. */
+.rank-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, var(--accent-soft), rgba(140, 21, 21, 0.04));
+  border-right: 1px solid rgba(184, 58, 58, 0.22);
+  pointer-events: none;
+}
+
+.rank-position {
+  position: relative;
+  flex-shrink: 0;
+  width: 30px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--accent-light);
+}
+
+.rank-handle {
+  position: relative;
+  flex-shrink: 0;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: grab;
+}
+
+.rank-handle:focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.rank-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.rank-name {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rank-name:hover {
+  color: var(--accent-light);
+}
+
+.rank-code {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.rank-question {
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Round 1 means. Fixed-width cells, tabular numerals and a right-aligned
+   group, so the three values line up as columns down the seventeen bars
+   instead of drifting with each title's length. */
+.rank-scores {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+}
+
+.rank-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Bottom-aligned, not centred: "Clinical relevance" fits on one line where
+     the other two labels wrap to two, and centring would then leave the three
+     numbers sitting at different heights. */
+  justify-content: flex-end;
+  gap: 2px;
+  width: 108px;
+  padding: 5px 6px 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(3, 7, 18, 0.55);
+  cursor: help;
+}
+
+/* Wraps to two lines inside the fixed width. Letter-spacing is dropped from
+   the abbreviated version: at this size it cost a line break. */
+.rank-score-key {
+  font-size: 0.53rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rank-score-val {
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.rank-nudge {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rank-nudge button {
+  width: 26px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(3, 7, 18, 0.6);
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rank-nudge button:hover:not(:disabled) {
+  border-color: var(--accent-light);
+  color: var(--ink);
+}
+
+.rank-nudge button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.rank-aside {
+  position: sticky;
+  top: 14px;
+}
+
+.rank-submit-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(11, 18, 32, 0.94));
+  box-shadow: var(--shadow);
+}
+
+.rank-submit-who {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.rank-submit-meta {
+  margin: 4px 0 14px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.rank-submit {
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.rank-submit:hover:not(:disabled) {
+  background: var(--accent-light);
+}
+
+.rank-submit:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.rank-status {
+  margin: 10px 0 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.rank-status.is-ok { color: var(--completed); }
+.rank-status.is-warn { color: var(--warning); }
+.rank-status.is-error { color: var(--danger); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .rank-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rank-aside {
+    position: static;
+    order: -1;
+  }
+
+  .rank-question {
+    display: none;
+  }
+
+  .rank-score {
+    width: 78px;
+    padding: 4px 3px;
+  }
+
+  .rank-score-key {
+    font-size: 0.47rem;
+  }
+}
+
+.rank-name-hint {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.rank-name:hover .rank-name-hint,
+.rank-name:focus-visible .rank-name-hint {
+  opacity: 1;
+}
+
+/* Fixed, not absolute: the row it anchors to has its own drag transform and
+   `overflow: hidden`, which would clip a descendant. Position comes from the
+   row's viewport rect, computed in openPopout(). */
+.rank-popout {
+  position: fixed;
+  z-index: 40;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 14px 16px;
+  border: 1px solid var(--accent-light);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(21, 31, 51, 0.99), rgba(15, 23, 42, 0.99));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  animation: rank-popout-in 0.12s ease-out;
+}
+
+.rank-popout.is-pinned {
+  border-color: var(--accent);
+  border-top-width: 3px;
+}
+
+@keyframes rank-popout-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rank-popout-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.rank-popout-definition {
+  margin: 0 0 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.rank-popout-label {
+  margin: 0 0 3px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-light);
+}
+
+/* Two columns, primary care then emergency department. The divider is a
+   border on the second column rather than a separate element, so it cannot
+   outlive a column when these stack on a narrow screen. */
+.rank-popout-examples {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.rank-popout-examples > div + div {
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+}
+
+.rank-popout-example {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.rank-popout-foot {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+/* Hover is unavailable here, so the popout is reachable only by tapping the
+   task name (which pins it). Let it use the full width. */
+@media (max-width: 900px) {
+  .rank-popout {
+    left: 12px !important;
+    width: calc(100vw - 24px) !important;
+  }
+
+  .rank-popout-examples {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .rank-popout-examples > div + div {
+    padding-left: 0;
+    padding-top: 12px;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .rank-name-hint {
+    opacity: 1;
+  }
+}
+
+/* --- panellist-code fallback (only seen if the ?r= link is broken) --- */
+
+.code-entry {
+  max-width: 620px;
+}
+
+.code-entry-error {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--danger);
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--ink);
+  font-size: 0.84rem;
+}
+
+.code-entry-form {
+  display: flex;
+  gap: 10px;
+  margin: 16px 0 14px;
+  flex-wrap: wrap;
+}
+
+.code-entry-form input {
+  flex: 1;
+  min-width: 200px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(3, 7, 18, 0.7);
+  color: var(--ink);
+  letter-spacing: 0.06em;
+}
+
+.code-entry-form input:focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 2px;
+}
+
+.code-entry-form button {
+  padding: 11px 22px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.code-entry-form button:hover {
+  background: var(--accent-light);
+}
+
+.code-entry-help {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Sign-in — ported verbatim from the Round 1 instrument so panellists meet
+   the same page they registered on. Only the wording differs.
+   --------------------------------------------------------------------------- */
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ghost-button,
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.ghost-button {
+  background: #111827;
+  color: var(--ink);
+}
+
+.ghost-button:hover {
+  background: #172033;
+  border-color: #324154;
+}
+
+.compact-button {
+  padding: 9px 14px;
+  font-size: 0.92rem;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: white;
+  border-color: transparent;
+}
+
+.primary-button:hover {
+  background: var(--accent-light);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.review-sidebar,
+.review-case-card,
+.review-scoring-panel,
+.login-panel,
+.admin-panel {
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.panel-nav-actions .ghost-button:first-child {
+  margin-right: auto;
+}
+
+.field-block {
+  display: grid;
+  gap: 3px;
+}
+
+.field-block textarea,
+.login-panel input,
+.login-panel select {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid #314055;
+  padding: 12px 14px;
+  background: #0f172a;
+  color: var(--ink);
+}
+
+.login-panel select {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+.login-panel select option {
+  background: #0f172a;
+  color: var(--ink);
+}
+
+.field-block textarea::placeholder,
+.login-panel input::placeholder {
+  color: #64748b;
+}
+
+.login-panel select:invalid,
+.login-panel select option[value=""] {
+  color: #64748b;
+}
+
+.field-block textarea {
+  min-height: 36px;
+  padding: 8px 14px;
+}
+
+.login-wrap {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+}
+
+.login-panel {
+  border-top: 3px solid var(--accent);
+}
+
+.login-panel,
+.admin-panel {
+  width: min(680px, 100%);
+  padding: 28px;
+}
+
+.login-panel {
+  width: min(1220px, 100%);
+}
+
+.consent-panel {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(36, 48, 65, 0.75);
+  background: rgba(12, 18, 31, 0.72);
+}
+
+.consent-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.consent-panel p + p {
+  margin-top: 12px;
+}
+
+.consent-panel strong {
+  color: var(--ink);
+}
+
+.error-banner {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(190, 24, 93, 0.45);
+  background: rgba(136, 19, 55, 0.18);
+  color: #fecdd3;
+}
+
+.login-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(380px, 0.9fr);
+  gap: 24px;
+  margin-top: 18px;
+  align-items: start;
+}
+
+.login-overview h2 {
+  margin: 6px 0 10px;
+}
+
+.login-overview > p {
+  max-width: 54ch;
+  color: var(--muted);
+}
+
+.login-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.login-card {
+  border: 1px solid rgba(36, 48, 65, 0.75);
+  border-radius: 18px;
+  padding: 18px;
+  background: rgba(10, 15, 26, 0.68);
+}
+
+.login-card.compact {
+  align-self: start;
+}
+
+.login-card h3 {
+  margin: 6px 0 8px;
+}
+
+.login-card p {
+  color: var(--muted);
+}
+
+.login-panel form {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1180px) {
+  .review-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* On mobile: sidebar collapses to top strip, review pane first, scoring pane second */
+  .review-sidebar {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+
+  .review-case-card {
+    position: static;
+    max-height: none;
+    order: 0;
+  }
+
+  .review-scoring-panel {
+    position: static;
+    max-height: none;
+    order: 1;
+  }
+
+  .review-case-header {
+    flex-direction: column;
+  }
+
+  .login-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .review-case-meta {
+    justify-content: flex-start;
+  }
+
+  .section-grid,
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .merge-review-layout,
+  .merge-row-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .merge-review-shell {
+    width: 100%;
+    padding: 22px;
+  }
+
+  /* Make pills slightly taller for touch targets on mobile */
+  .pill-inner {
+    min-height: 64px;
+  }
+}
