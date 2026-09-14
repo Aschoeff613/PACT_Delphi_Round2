@@ -6,7 +6,7 @@ import { SELECTED_COUNT, type RankingTask } from "@/lib/tasks";
 
 type Props = {
   tasks: RankingTask[];
-  /** Order the panellist was first shown, recorded for anchoring analysis. */
+  /** Order the panelist was first shown, recorded for anchoring analysis. */
   startOrder: string[];
   reviewerName: string;
   submittedAt: string | null;
@@ -352,9 +352,9 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
           </li>
           <li>
             The order mostly follows the aggregate, but not strictly — selecting the benchmark was
-            a judgement, not a cutoff, so one task sits above another with a higher aggregate
+            a judgment, not a cutoff, so one task sits above another with a higher aggregate
           </li>
-          <li>Every panellist sees this same starting order</li>
+          <li>Every panelist sees this same starting order</li>
           <li>All 17 positions are submitted together — nothing saves until you submit</li>
           <li>You can come back and revise your ranking until the round closes</li>
         </ul>

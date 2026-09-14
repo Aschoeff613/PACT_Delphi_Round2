@@ -2,7 +2,7 @@
 --
 -- Round 1 asked for three independent 1-5 ratings per task, which left the
 -- eligible set larger than the final taxonomy and gave no ordering within it.
--- Reviewers asked for a validation round, so Round 2 asks each panellist for a
+-- Reviewers asked for a validation round, so Round 2 asks each panelist for a
 -- single complete ordering of all 17 tasks, 1 (highest priority for inclusion)
 -- through 17.
 --
@@ -41,7 +41,7 @@ create table if not exists public.round2_rankings (
   -- 1 = highest priority for inclusion in the final taxonomy.
   rank integer not null,
 
-  -- Position this task held in the randomised list the panellist was first
+  -- Position this task held in the randomized list the panelist was first
   -- shown, so anchoring on the start order can be checked rather than assumed
   -- away. Nullable: rankings loaded from outside the app have no start order.
   initial_rank integer,

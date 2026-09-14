@@ -29,15 +29,15 @@
  */
 
 /**
- * Round 1 group results, shown back to panellists as Delphi feedback.
+ * Round 1 group results, shown back to panelists as Delphi feedback.
  *
  * Transcribed from Table S1 rather than computed live from the `ratings`
  * table, and this is deliberate. Table S1 excludes a complete submission
  * received 14 August 2026 -- after the round closed -- that recorded the scale
  * minimum on all three dimensions for all 17 tasks and was judged a platform
- * test entry, and it merges two panellist codes that shared one email. A live
+ * test entry, and it merges two panelist codes that shared one email. A live
  * average over `ratings` would silently reinstate the test entry and
- * double-count the merged panellist, so every number shown would disagree with
+ * double-count the merged panelist, so every number shown would disagree with
  * the published supplement.
  *
  * Values are as published, to two decimal places.
@@ -62,7 +62,7 @@ export type Round1Means = {
    * reproduce the published order.
    */
   tableS1Rank: number;
-  /** Responding panellists for this task. Partial responses were retained. */
+  /** Responding panelists for this task. Partial responses were retained. */
   n: number;
 };
 
@@ -113,7 +113,7 @@ export const TASKS: RankingTask[] = [
   },
   {
     taskCode: "T2",
-    title: "Prioritisation & resource management",
+    title: "Prioritization & resource management",
     guidingQuestion: "What or whom next, and what do I spend on it?",
     definition: "Deciding what or whom to deal with next, and how to spend limited resources: attention, time, beds, staff, equipment, when several things compete.",
     constructBoundary: "Not the severity read that feeds the ranking (task 1), and not the clinician managing their own memory or attention (task 14).",
@@ -206,7 +206,7 @@ export const TASKS: RankingTask[] = [
     title: "Judging credibility & completeness",
     guidingQuestion: "Can I trust this source, and what is missing?",
     definition: "Judging whether incoming information can be trusted and whether anything is missing: checking the source, deciding whether to verify it first-hand, and flagging the gap.",
-    constructBoundary: "Not information simply acknowledged as missing (task 5), and not trusting a person's judgement or work (task 13). This is about the source, not the person.",
+    constructBoundary: "Not information simply acknowledged as missing (task 5), and not trusting a person's judgment or work (task 13). This is about the source, not the person.",
     exampleEd: "The only history for an unresponsive patient runs from a bystander to a paramedic to a triage note. Judge how much of that chain to believe, and decide what to re-check personally before committing.",
     examplePrimaryCare: "An outside note asserts a normal stress test 14 months ago, with no report attached and no images available. Decide whether that assertion can carry weight, or whether the study must be obtained or repeated.",
     selectedForBenchmark: false,
@@ -241,10 +241,10 @@ export const TASKS: RankingTask[] = [
     taskCode: "T9",
     title: "Knowledge & protocol retrieval",
     guidingQuestion: "What do I know, or need to look up?",
-    definition: "Retrieving stored medical knowledge, rules or standards from memory, or looking them up, and applying them to the case — including recognising the limits of one’s own knowledge.",
+    definition: "Retrieving stored medical knowledge, rules or standards from memory, or looking them up, and applying them to the case — including recognizing the limits of one’s own knowledge.",
     constructBoundary: "Not looking up the patient's own chart data (task 3 or 8). A passage that merely sounds medical, with nothing retrieved and no gap named, does not qualify.",
     exampleEd: "A patient on apixaban has an intracranial bleed. Retrieve the reversal agent, the dose and the time window, and identify the point at which recall runs out and an outside source is needed.",
-    examplePrimaryCare: "A 67-year-old asks about pneumococcal vaccination, with a prior dose at 63. Recall the current interval and sequence, and recognise that the schedule has changed and needs looking up.",
+    examplePrimaryCare: "A 67-year-old asks about pneumococcal vaccination, with a prior dose at 63. Recall the current interval and sequence, and recognize that the schedule has changed and needs looking up.",
     selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.07,
@@ -293,7 +293,7 @@ export const TASKS: RankingTask[] = [
   },
   {
     taskCode: "T12",
-    title: "Patient-centred reasoning & communication",
+    title: "Patient-centered reasoning & communication",
     guidingQuestion: "What does this patient need, and how do I say it?",
     definition: "Folding the patient's situation, goals, understanding, preferences and feelings into the reasoning and the plan, and deliberately shaping how things are communicated to fit them.",
     constructBoundary: "Not talking to other clinicians (task 13), and not judging whether the patient's account is reliable (task 7). Noticing a communication habit without changing anything is task 14.",
@@ -370,7 +370,7 @@ export const TASKS: RankingTask[] = [
     definition: "Judging whether a plan can actually be carried out, given coverage, cost, appointment supply, service hours and who controls access, and working out a route around the block when there is one.",
     constructBoundary: "The constraint must belong to the system, not the patient. What the patient can afford or get to is task 12. Cost as one factor in choosing between treatments is task 11.",
     exampleEd: "The patient needs an MRI this hospital does not perform overnight, and the on-call neurosurgeon covers a second site. Reason about boarding until morning, transferring, or managing without the study.",
-    examplePrimaryCare: "The guideline-preferred agent is not covered, prior authorisation takes three weeks, and the next endocrinology appointment is five months out. Work out which available route actually gets treatment started.",
+    examplePrimaryCare: "The guideline-preferred agent is not covered, prior authorization takes three weeks, and the next endocrinology appointment is five months out. Work out which available route actually gets treatment started.",
     selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 3.86,
@@ -407,10 +407,10 @@ export const TASK_COUNT = TASKS.length;
 export const SELECTED_COUNT = TASKS.filter((task) => task.selectedForBenchmark).length;
 
 /**
- * The 17 tasks in the order every panellist is shown them: the adopted 12
+ * The 17 tasks in the order every panelist is shown them: the adopted 12
  * first, then the 5 that were not selected, each group by composite rank.
  *
- * Identical for everyone by design. Round 2 asks panellists to adjust a
+ * Identical for everyone by design. Round 2 asks panelists to adjust a
  * proposed set rather than build one from scratch, so the order is the
  * stimulus and must not vary between them.
  *

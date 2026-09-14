@@ -124,7 +124,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     "use server";
 
     // Refuse before touching the database: without settings this would throw a
-    // server exception, which reaches the panellist as an opaque error page.
+    // server exception, which reaches the panelist as an opaque error page.
     if (!isSupabaseConfigured()) {
       redirect(`/login?error=not_configured&redirectTo=${encodeURIComponent(String(formData.get("redirectTo") || "/"))}`);
     }
@@ -198,12 +198,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     "use server";
 
     // Refuse before touching the database: without settings this would throw a
-    // server exception, which reaches the panellist as an opaque error page.
+    // server exception, which reaches the panelist as an opaque error page.
     if (!isSupabaseConfigured()) {
       redirect(`/login?error=not_configured&redirectTo=${encodeURIComponent(String(formData.get("redirectTo") || "/"))}`);
     }
 
-    // Username format: first_last (e.g. jane_smith). Spacing, capitalisation and
+    // Username format: first_last (e.g. jane_smith). Spacing, capitalization and
     // punctuation are all forgiven — only the letters and digits have to match.
     const username = String(formData.get("username") || "").trim();
     const redirectTo = String(formData.get("redirectTo") || "/");
@@ -251,7 +251,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <p className="error-banner">Enter your username in first_last format (e.g. jane_smith).</p>
         )}
         {params.error === "invalid_identity" && (
-          <p className="error-banner">Username not recognised. Check the format is first_last and matches your registration.</p>
+          <p className="error-banner">Username not recognized. Check the format is first_last and matches your registration.</p>
         )}
         {params.error === "locked" && (
           <p className="error-banner">This account has been locked. Contact the study team.</p>

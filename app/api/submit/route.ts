@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Your session has expired. Please sign in again." }, { status: 401 });
   }
   if (session.reviewer.locked_at) {
-    return NextResponse.json({ error: "This panellist record is locked" }, { status: 403 });
+    return NextResponse.json({ error: "This panelist record is locked" }, { status: 403 });
   }
 
   let payload: Payload;

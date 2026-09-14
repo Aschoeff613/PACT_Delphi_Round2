@@ -31,7 +31,7 @@ export function createAdminClient() {
   });
 }
 
-/** Round 1 issued codes like `R3CCB3F`; normalise the same way it did. */
+/** Round 1 issued codes like `R3CCB3F`; normalize the same way it did. */
 export function normalizeReviewerCode(value: string) {
   return value.trim().toUpperCase().replace(/\s+/g, "");
 }

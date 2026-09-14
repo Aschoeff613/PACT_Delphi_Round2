@@ -29,22 +29,22 @@ export default async function Page() {
   const byCode = new Map(TASKS.map((task) => [task.taskCode, task]));
 
   // A saved ranking is restored in its saved order; anyone else gets the
-  // randomised start order. Saved rows are filtered through the current task
+  // randomized start order. Saved rows are filtered through the current task
   // set so a stale code cannot put an unknown card on the board.
   const savedTasks = (saved ?? [])
     .map((row) => byCode.get(row.task_code))
     .filter((task): task is RankingTask => Boolean(task));
 
-  // A returning panellist picks up their own saved ranking; everyone else
+  // A returning panelist picks up their own saved ranking; everyone else
   // starts from the study team's composite order, identical for all of them.
   const hasCompleteSaved = savedTasks.length === TASKS.length;
   const boardOrder = hasCompleteSaved ? savedTasks : PRESENTED_ORDER;
 
-  // On a revision the start order is the one this panellist was *originally*
+  // On a revision the start order is the one this panelist was *originally*
   // shown, recovered from initial_rank -- not the order the board opens in.
   // Overwriting it with the saved ranking would make initial_rank a copy of
   // rank, and initial_rank is what makes displacement from the proposed order
-  // measurable: rank minus initial_rank is how far this panellist moved each
+  // measurable: rank minus initial_rank is how far this panelist moved each
   // task away from what the team put in front of them.
   const recordedStart = (saved ?? [])
     .filter((row) => row.initial_rank !== null)
