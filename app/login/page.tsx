@@ -138,7 +138,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     const redirectTo = String(formData.get("redirectTo") || "/");
     const admin = createAdminClient();
 
-    if (!firstName || !lastName || !email) {
+    if (!firstName || !lastName || !email || !institution || !title) {
       redirect(`/login?error=missing_registration_fields&redirectTo=${encodeURIComponent(redirectTo)}`);
     }
 
@@ -172,8 +172,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           display_name: firstName,
           last_name: lastName,
           email,
-          institution: institution || null,
-          title: title || null
+          institution,
+          // Column is `title`; the form asks for "Department". Round 1 used the
+          // same column for department or job title, and the analysis export
+          // reads it by column name, so the column keeps its name.
+          title
         })
         .select("id")
         .single();
@@ -240,7 +243,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <div className="login-wrap">
       <div className="login-panel">
         {params.error === "missing_registration_fields" && (
-          <p className="error-banner">Please fill in your first name, last name, and email to register.</p>
+          <p className="error-banner">
+            Please fill in your first name, last name, email, institution and department to register.
+          </p>
         )}
         {params.error === "missing_return_fields" && (
           <p className="error-banner">Enter your username in first_last format (e.g. jane_smith).</p>
@@ -314,8 +319,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   <input type="email" name="email" required placeholder="you@example.org" autoComplete="email" />
                 </label>
                 <label className="field-block">
-                  <span>Institution (optional)</span>
-                  <select name="institution" defaultValue="">
+                  <span>Institution</span>
+                  <select name="institution" defaultValue="" required>
                     <option value="" disabled>Select institution</option>
                     {INSTITUTIONS.map((inst) => (
                       <option key={inst} value={inst}>{inst}</option>
@@ -323,8 +328,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   </select>
                 </label>
                 <label className="field-block">
-                  <span>Department or title (optional)</span>
-                  <input type="text" name="title" placeholder="Emergency Medicine" />
+                  <span>Department</span>
+                  <input type="text" name="title" required placeholder="Emergency Medicine" />
                 </label>
                 <button className="primary-button" type="submit">Begin Round 2</button>
               </form>
