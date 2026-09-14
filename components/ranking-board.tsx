@@ -15,7 +15,7 @@ type Props = {
 type SaveState = "idle" | "saving" | "saved" | "error";
 
 /** Height of one bar plus the gap below it, in px. Mirrors the CSS. */
-const ROW_HEIGHT = 64;
+const ROW_HEIGHT = 80;
 const ROW_GAP = 8;
 const STRIDE = ROW_HEIGHT + ROW_GAP;
 
@@ -330,18 +330,27 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
           one another.
         </p>
         <p>
-          <strong>Drag the bars into the order you would prioritise them</strong> for
-          inclusion in the final PACT benchmark taxonomy — position 1 is the highest
-          priority, position 17 the lowest.
+          <strong>The list below is already ordered by your panel&rsquo;s Round 1 data</strong> —
+          highest aggregate score at position 1, lowest at position 17. This is what our team
+          arrived at as the strongest candidate tasks.
+        </p>
+        <p>
+          <strong>Please read through it and move anything up or down that you think needs
+          adjusting.</strong> Leaving a task where it is counts as agreement, so there is no
+          need to move anything you already agree with.
         </p>
         <ul className="hero-instructions">
           <li>Drag a bar by the handle or any empty part of it, or focus the handle and use ↑ / ↓</li>
           <li>Hover a task name for its definition and worked examples from the ED and primary care — click to keep the card open</li>
           <li>
-            The three numbers on each bar are your panel&rsquo;s Round 1 averages for that task, out
-            of 5. They are shown as a reminder of where the group landed, not as an order to follow
+            The three numbers on the right of each bar are your panel&rsquo;s Round 1 averages for
+            that task, out of 5
           </li>
-          <li>The list starts in a random order, different for each panellist</li>
+          <li>
+            The <strong>aggregate</strong> is the average of those three, and is what the list is
+            ordered by
+          </li>
+          <li>Every panellist sees this same starting order</li>
           <li>All 17 positions are submitted together — nothing saves until you submit</li>
           <li>You can come back and revise your ranking until the round closes</li>
         </ul>
@@ -361,7 +370,7 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
                 key={task.taskCode}
                 ref={(node) => registerRow(task.taskCode, node)}
                 className={`rank-row${isDragging ? " is-dragging" : ""}${isOpen ? " is-open" : ""}`}
-                aria-label={`Position ${index + 1} of ${order.length}: ${task.title}. Round 1 means: clinical relevance ${task.round1.clinicalRelevance.toFixed(2)}, performance variance ${task.round1.performanceVariance.toFixed(2)}, AI augmentation ${task.round1.aiAugmentation.toFixed(2)}, out of 5.`}
+                aria-label={`Position ${index + 1} of ${order.length}: ${task.title}. Round 1 aggregate ${task.round1.composite.toFixed(2)} of 5. Means: clinical relevance ${task.round1.clinicalRelevance.toFixed(2)}, performance variance ${task.round1.performanceVariance.toFixed(2)}, AI augmentation ${task.round1.aiAugmentation.toFixed(2)}, out of 5.`}
               >
                 <div
                   className="rank-bar"
@@ -422,9 +431,18 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
                     <span className="rank-question">{task.guidingQuestion}</span>
                   </span>
 
-                  {/* Round 1 group means, as Delphi feedback. Fixed-width cells
-                      so the three read as columns down the list. */}
+                  {/* Round 1 group results, as Delphi feedback. Fixed-width
+                      cells so the columns line up down the list. The aggregate
+                      is styled apart from the three because it is derived from
+                      them, not a fourth rating. */}
                   <span className="rank-scores" aria-hidden="true">
+                    <span
+                      className="rank-score rank-aggregate"
+                      title={`Aggregate score ${task.round1.composite.toFixed(2)} of 5 — the unweighted mean of the three dimension means. Ranked ${task.round1.tableS1Rank} of 17 on this score.`}
+                    >
+                      <span className="rank-score-key">Aggregate</span>
+                      <span className="rank-score-val">{task.round1.composite.toFixed(2)}</span>
+                    </span>
                     <span className="rank-score" title={`Clinical relevance, Round 1 mean ${task.round1.clinicalRelevance.toFixed(2)} of 5 (n=${task.round1.n})`}>
                       <span className="rank-score-key">Clinical relevance</span>
                       <span className="rank-score-val">{task.round1.clinicalRelevance.toFixed(2)}</span>

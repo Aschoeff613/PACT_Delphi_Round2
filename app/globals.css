@@ -163,7 +163,10 @@ textarea {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 64px;
+  /* 80px, not 64: with four score cells the longer task titles wrap to two
+     lines, and at 64px the title and its guiding question overflowed a bar
+     that clips. ROW_HEIGHT in ranking-board.tsx must match. */
+  height: 80px;
   padding: 0 14px;
   overflow: hidden;
   border: 1px solid var(--border);
@@ -285,7 +288,7 @@ textarea {
      numbers sitting at different heights. */
   justify-content: flex-end;
   gap: 2px;
-  width: 108px;
+  width: 100px;
   padding: 5px 6px 4px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -302,6 +305,25 @@ textarea {
   text-align: center;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* The aggregate is derived from the other three, not a fourth rating, so it
+   reads as a different kind of thing: accent-tinted, a heavier number, and set
+   off by its own right-hand rule and a wider gap. */
+.rank-aggregate {
+  width: 78px;
+  margin-right: 8px;
+  border-color: rgba(184, 58, 58, 0.55);
+  background: linear-gradient(180deg, rgba(140, 21, 21, 0.28), rgba(140, 21, 21, 0.12));
+}
+
+.rank-aggregate .rank-score-key {
+  color: var(--accent-light);
+}
+
+.rank-aggregate .rank-score-val {
+  font-size: 0.92rem;
+  color: #fff;
 }
 
 .rank-score-val {
@@ -428,6 +450,11 @@ textarea {
   .rank-score {
     width: 78px;
     padding: 4px 3px;
+  }
+
+  .rank-aggregate {
+    width: 64px;
+    margin-right: 6px;
   }
 
   .rank-score-key {

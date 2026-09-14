@@ -1,40 +1,10 @@
 import { redirect } from "next/navigation";
 import { RankingBoard } from "@/components/ranking-board";
-import { TASKS, type RankingTask } from "@/lib/tasks";
+import { PRESENTED_ORDER, TASKS, type RankingTask } from "@/lib/tasks";
 import { getReviewerSession } from "@/lib/reviewer-session";
 import { createAdminClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
-
-/**
- * Deterministic per-reviewer shuffle of the start order.
- *
- * Presenting T1..T17 in codebook order would invite panellists to leave the
- * list as they found it, and that order is itself an artefact of Round 1. The
- * permutation is seeded from the reviewer id so it is stable across reloads --
- * someone who ranks half the list, leaves, and comes back does not find it
- * rearranged -- while differing between panellists.
- */
-function shuffleForReviewer(items: RankingTask[], reviewerId: string): RankingTask[] {
-  let seed = 0;
-  for (const char of reviewerId) {
-    seed = (seed * 31 + char.charCodeAt(0)) % 2147483647;
-  }
-  if (seed === 0) seed = 1;
-
-  const next = () => {
-    // Park-Miller: enough for a start order, and reproducible from the seed.
-    seed = (seed * 48271) % 2147483647;
-    return seed / 2147483647;
-  };
-
-  const shuffled = [...items];
-  for (let i = shuffled.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(next() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
 
 export default async function Page() {
   const session = await getReviewerSession();
@@ -65,13 +35,17 @@ export default async function Page() {
     .map((row) => byCode.get(row.task_code))
     .filter((task): task is RankingTask => Boolean(task));
 
+  // A returning panellist picks up their own saved ranking; everyone else
+  // starts from the study team's composite order, identical for all of them.
   const hasCompleteSaved = savedTasks.length === TASKS.length;
-  const boardOrder = hasCompleteSaved ? savedTasks : shuffleForReviewer(TASKS, reviewer.id);
+  const boardOrder = hasCompleteSaved ? savedTasks : PRESENTED_ORDER;
 
   // On a revision the start order is the one this panellist was *originally*
   // shown, recovered from initial_rank -- not the order the board opens in.
   // Overwriting it with the saved ranking would make initial_rank a copy of
-  // rank and destroy the anchoring check it exists for.
+  // rank, and initial_rank is what makes displacement from the proposed order
+  // measurable: rank minus initial_rank is how far this panellist moved each
+  // task away from what the team put in front of them.
   const recordedStart = (saved ?? [])
     .filter((row) => row.initial_rank !== null)
     .sort((a, b) => (a.initial_rank as number) - (b.initial_rank as number))

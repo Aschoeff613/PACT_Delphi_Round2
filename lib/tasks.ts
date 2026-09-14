@@ -15,13 +15,14 @@
  *
  * T1 was revised by the study team after Round 1 and does not match either
  * text source: it now asks for a single global read at first contact whose
- * output is pace and level of care.
+ * output is pace and level of care. Its ratings are unaffected -- only the
+ * wording changed -- so its Round 1 figures still stand.
  *
  * taskCode is load-bearing: the R analysis orders tasks by its numeric suffix.
  */
 
 /**
- * Round 1 group means, shown back to panellists as Delphi feedback.
+ * Round 1 group results, shown back to panellists as Delphi feedback.
  *
  * Transcribed from Table S1 rather than computed live from the `ratings`
  * table, and this is deliberate. Table S1 excludes a complete submission
@@ -32,8 +33,7 @@
  * double-count the merged panellist, so every number shown would disagree with
  * the published supplement.
  *
- * Values are as published, to two decimal places. Composites recomputed from
- * these agree with Table S1's own composite column to within its rounding.
+ * Values are as published, to two decimal places.
  */
 export type Round1Means = {
   /** How much it matters that the task is done well. */
@@ -42,6 +42,19 @@ export type Round1Means = {
   performanceVariance: number;
   /** Whether AI could meaningfully augment the task. */
   aiAugmentation: number;
+  /**
+   * Unweighted mean of the three dimension means -- Table S1's "Composite".
+   * Taken as published rather than recomputed from the three rounded values
+   * above, which would disagree in the last digit.
+   */
+  composite: number;
+  /**
+   * Rank on composite in Table S1, 1 (highest) to 17. This is the order the
+   * board is presented in, so it is stored rather than derived: two pairs tie
+   * on composite to two decimals (T5/T9 at 3.62, T17/T13 at 2.98) and sorting
+   * on the rounded value alone would not reproduce the published order.
+   */
+  tableS1Rank: number;
   /** Responding panellists for this task. Partial responses were retained. */
   n: number;
 };
@@ -54,7 +67,7 @@ export type RankingTask = {
   /**
    * What this construct is NOT. Held here but deliberately not rendered: the
    * text refers to sibling constructs by codebook number ("drifted to task 4"),
-   * which would collide with the 1-17 position numbers on the ranking board.
+   * which would collide with the 1-17 position numbers on the board.
    */
   constructBoundary: string;
   /** Worked example set in the Emergency Department. */
@@ -77,6 +90,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.73,
       performanceVariance: 2.40,
       aiAugmentation: 2.33,
+      composite: 3.16,
+      tableS1Rank: 14,
       n: 15,
     },
   },
@@ -92,6 +107,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.50,
       performanceVariance: 2.79,
       aiAugmentation: 3.43,
+      composite: 3.57,
+      tableS1Rank: 7,
       n: 14,
     },
   },
@@ -107,6 +124,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.29,
       performanceVariance: 3.36,
       aiAugmentation: 3.93,
+      composite: 3.86,
+      tableS1Rank: 3,
       n: 14,
     },
   },
@@ -122,6 +141,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.86,
       performanceVariance: 3.21,
       aiAugmentation: 3.93,
+      composite: 4.00,
+      tableS1Rank: 1,
       n: 14,
     },
   },
@@ -137,6 +158,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.50,
       performanceVariance: 3.50,
       aiAugmentation: 2.86,
+      composite: 3.62,
+      tableS1Rank: 5,
       n: 14,
     },
   },
@@ -152,6 +175,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.64,
       performanceVariance: 3.29,
       aiAugmentation: 3.29,
+      composite: 3.74,
+      tableS1Rank: 4,
       n: 14,
     },
   },
@@ -167,6 +192,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.00,
       performanceVariance: 2.93,
       aiAugmentation: 2.36,
+      composite: 3.10,
+      tableS1Rank: 15,
       n: 14,
     },
   },
@@ -182,6 +209,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.14,
       performanceVariance: 3.14,
       aiAugmentation: 3.29,
+      composite: 3.52,
+      tableS1Rank: 8,
       n: 14,
     },
   },
@@ -197,6 +226,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.07,
       performanceVariance: 2.36,
       aiAugmentation: 4.43,
+      composite: 3.62,
+      tableS1Rank: 6,
       n: 14,
     },
   },
@@ -212,6 +243,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 3.79,
       performanceVariance: 3.14,
       aiAugmentation: 3.36,
+      composite: 3.43,
+      tableS1Rank: 12,
       n: 14,
     },
   },
@@ -227,6 +260,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.15,
       performanceVariance: 3.31,
       aiAugmentation: 3.08,
+      composite: 3.51,
+      tableS1Rank: 9,
       n: 13,
     },
   },
@@ -242,6 +277,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.00,
       performanceVariance: 3.29,
       aiAugmentation: 3.14,
+      composite: 3.48,
+      tableS1Rank: 10,
       n: 14,
     },
   },
@@ -257,6 +294,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 3.50,
       performanceVariance: 3.21,
       aiAugmentation: 2.21,
+      composite: 2.98,
+      tableS1Rank: 17,
       n: 14,
     },
   },
@@ -272,6 +311,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 3.50,
       performanceVariance: 3.50,
       aiAugmentation: 2.79,
+      composite: 3.26,
+      tableS1Rank: 13,
       n: 14,
     },
   },
@@ -287,6 +328,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 4.07,
       performanceVariance: 3.14,
       aiAugmentation: 4.64,
+      composite: 3.95,
+      tableS1Rank: 2,
       n: 14,
     },
   },
@@ -302,6 +345,8 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 3.86,
       performanceVariance: 3.36,
       aiAugmentation: 3.14,
+      composite: 3.45,
+      tableS1Rank: 11,
       n: 14,
     },
   },
@@ -317,9 +362,23 @@ export const TASKS: RankingTask[] = [
       clinicalRelevance: 3.50,
       performanceVariance: 2.86,
       aiAugmentation: 2.57,
+      composite: 2.98,
+      tableS1Rank: 16,
       n: 14,
     },
   },
 ];
 
 export const TASK_COUNT = TASKS.length;
+
+/**
+ * The 17 tasks in the order every panellist is shown them: the study team's
+ * Round 1 composite ranking, best first.
+ *
+ * Identical for everyone by design. Round 2 asks panellists to adjust a
+ * proposed order rather than build one from scratch, so the order is the
+ * stimulus and must not vary between them.
+ */
+export const PRESENTED_ORDER: RankingTask[] = [...TASKS].sort(
+  (a, b) => a.round1.tableS1Rank - b.round1.tableS1Rank
+);
