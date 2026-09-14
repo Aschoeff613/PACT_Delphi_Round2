@@ -14,10 +14,16 @@
  *   - round1 / selectedForBenchmark: Supplementary Table S1,
  *     "PACT_Delphi Results TableS1"
  *
- * T1 was revised by the study team after Round 1 and does not match either
- * text source: it now asks for a single global read at first contact whose
- * output is pace and level of care. Its ratings are unaffected -- only the
- * wording changed -- so its Round 1 figures still stand.
+ * Two entries have been revised by the study team since Round 1 and no longer
+ * match their text source. Ratings are unaffected in both cases -- only the
+ * wording changed -- so the Round 1 figures still stand.
+ *
+ *   - T1: now asks for a single global read at first contact whose output is
+ *     pace and level of care.
+ *   - T14 exampleEd: the original bundled three asks together and told the
+ *     clinician to "reopen the case", which is task 4 and the one thing this
+ *     construct's own boundary rules out. Replaced with a single ask that stays
+ *     inside the clinician's own head.
  *
  * taskCode is load-bearing: the R analysis orders tasks by its numeric suffix.
  */
@@ -327,7 +333,7 @@ export const TASKS: RankingTask[] = [
     guidingQuestion: "What is my own mind doing, and how do I manage it?",
     definition: "Watching their own reasoning, confidence and biases, and deliberately managing their own attention, effort and memory.",
     constructBoundary: "Only the clinician's own mind. Spending external resources or ranking patients is task 2. Handing work to someone else is task 13. Frustration at what others are doing is neither.",
-    exampleEd: "The handoff framed the patient as a psych patient. Name that the framing has anchored you, deliberately reopen the case, and set a reminder so the pending glucose is not lost across the next interruption.",
+    exampleEd: "A patient signed out as \"intoxicated, sleeping it off\" has been on the board four hours, and you notice you have walked past the room twice without looking in. Say explicitly that you have anchored on the handoff label, and name what it would take to change your mind.",
     examplePrimaryCare: "At the end of a long appointment, notice your own engagement dropping and that you are rushing a complex patient. Slow down deliberately and re-check the medication list you have just reviewed.",
     selectedForBenchmark: false,
     round1: {
