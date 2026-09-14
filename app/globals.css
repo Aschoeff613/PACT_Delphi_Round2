@@ -143,6 +143,52 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  /* Anchor for the cut line, which is positioned rather than laid out. */
+  position: relative;
+}
+
+/* The 12/13 boundary. Taken out of flow deliberately: as a flex item it would
+   add its own height, putting every row below it out of step with the stride
+   the drag maths assume. `top` comes from the component, off the same
+   constants. Inert to pointer events so a bar can still be dragged past it. */
+.rank-cutline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px dashed rgba(184, 58, 58, 0.65);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.rank-cutline span {
+  padding: 3px 12px;
+  border: 1px solid rgba(184, 58, 58, 0.5);
+  border-radius: 999px;
+  background: #0d1424;
+  color: var(--accent-light);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Tasks the team did not select read a shade quieter, so the proposed set is
+   legible even after bars have been moved across the line. */
+.rank-row.was-not-selected .rank-bar {
+  background: rgba(11, 18, 32, 0.72);
+}
+
+.rank-row.was-not-selected .rank-name {
+  color: var(--muted);
+}
+
+.rank-row.was-not-selected .rank-name:hover {
+  color: var(--accent-light);
 }
 
 .rank-row {

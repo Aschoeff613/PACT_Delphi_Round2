@@ -11,7 +11,8 @@
  *   - constructBoundary / exampleEd / examplePrimaryCare: the Round 1
  *     instrument's case seeds (PACT_EMC_V6_Tasks_CaseSeeds_1.xlsx, sheet
  *     "Cognitive Tasks")
- *   - round1: Supplementary Table S1, "PACT_Delphi Results TableS1"
+ *   - round1 / selectedForBenchmark: Supplementary Table S1,
+ *     "PACT_Delphi Results TableS1"
  *
  * T1 was revised by the study team after Round 1 and does not match either
  * text source: it now asks for a single global read at first contact whose
@@ -49,10 +50,10 @@ export type Round1Means = {
    */
   composite: number;
   /**
-   * Rank on composite in Table S1, 1 (highest) to 17. This is the order the
-   * board is presented in, so it is stored rather than derived: two pairs tie
-   * on composite to two decimals (T5/T9 at 3.62, T17/T13 at 2.98) and sorting
-   * on the rounded value alone would not reproduce the published order.
+   * Rank on composite in Table S1, 1 (highest) to 17. Stored rather than
+   * derived: two pairs tie on composite to two decimals (T5/T9 at 3.62,
+   * T17/T13 at 2.98), so sorting on the rounded value alone would not
+   * reproduce the published order.
    */
   tableS1Rank: number;
   /** Responding panellists for this task. Partial responses were retained. */
@@ -74,6 +75,14 @@ export type RankingTask = {
   exampleEd: string;
   /** Worked example set in Primary Care. */
   examplePrimaryCare: string;
+  /**
+   * In the 12-task set adopted at the leadership consensus meeting.
+   *
+   * A decision, not a computed field, and it does not follow composite rank
+   * strictly: T5 ranks 5th on composite and was not selected, while T1 ranks
+   * 14th and was. Those two are the whole of the difference.
+   */
+  selectedForBenchmark: boolean;
   round1: Round1Means;
 };
 
@@ -86,6 +95,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not a diagnosis and not an action. If the case forces a differential it has drifted to task 4; if it forces an admit or order decision it has drifted to task 11 or 2. It also borders task 8: what keeps this separate is that it stays a single global severity judgment made at first contact, whose output is pace and level of care, not an integrated interpretation of findings against a baseline.",
     exampleEd: "A 78-year-old brought in by ambulance for generalized weakness. The triage note reads \"weak, not herself since yesterday\"; heart rate 96, blood pressure 112/64, temperature 37.4 C; the first labs show a creatinine of 2.1 and a lactate of 3.0. Give a single global read of how sick she is, and set the pace and level of care, before any workup settles what is going on.",
     examplePrimaryCare: "A same-day add-on for two days of vomiting. Recorded vital signs are normal, but she looks exhausted and cannot sit up on the exam table. Give a single global read of how unwell she is right now, and decide whether this stays a clinic visit or escalates to higher-level care today.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.73,
       performanceVariance: 2.40,
@@ -103,6 +113,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not the severity read that feeds the ranking (task 1), and not the clinician managing their own memory or attention (task 14).",
     exampleEd: "Four patients need attention at once: chest pain awaiting a second troponin, a laceration, a septic-appearing nursing home transfer, and a new intoxicated patient. One CT slot has opened and the nurse is asking who gets the room.",
     examplePrimaryCare: "The appointment schedule is running 40 minutes behind with a double-booked slot, a same-day add-on for chest tightness, and two urgent portal messages. Decide what gets attention in the next hour and what is deferred.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.50,
       performanceVariance: 2.79,
@@ -120,6 +131,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not whether the information can be trusted (task 7), and not integrating findings already accepted as accurate (task 8). Stopping the search is this task; an unresolvable unknown is task 5.",
     exampleEd: "Ninety seconds of chart time before entering the room for an 82-year-old with syncope. Choose which few items to pull, prior ECGs, medication list, or last echocardiogram, and say when that is enough to start.",
     examplePrimaryCare: "Three months of fatigue with an open history to take in a 15-minute visit. Choose the questions that would actually separate thyroid disease, anaemia, depression and sleep apnoea, and stop when the picture is sufficient to order from.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.29,
       performanceVariance: 3.36,
@@ -137,6 +149,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not the overall sick or not-sick read (task 1), and not keeping a diagnosis alive because of the danger of missing it (task 6).",
     exampleEd: "A 45-year-old with epigastric pain and diaphoresis has a normal ECG and a lipase of 60. ACS, pancreatitis, biliary disease and aortic pathology all remain live, and each returning result should move the ranking.",
     examplePrimaryCare: "A 60-year-old reports six weeks of cough without fever. Post-viral cough, ACE inhibitor effect, reflux, asthma and malignancy are all in play, and a normal chest film moves some candidates without clearing the list.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.86,
       performanceVariance: 3.21,
@@ -154,6 +167,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "The unknown must be stated explicitly. If the case moves a diagnosis up or down it is task 4; if the point is how dangerous a miss would be it is task 6.",
     exampleEd: "A 30-year-old with 12 hours of periumbilical pain has an equivocal ultrasound and a normal white count. Appendicitis cannot be excluded tonight. Say so explicitly, then set the return threshold and recheck interval that make discharge acceptable.",
     examplePrimaryCare: "An isolated mildly elevated alkaline phosphatase in an asymptomatic patient. Acknowledge that the cause cannot be established yet, deliberately leave it alone, and name the repeat interval and the value that would prompt a workup.",
+    selectedForBenchmark: false,
     round1: {
       clinicalRelevance: 4.50,
       performanceVariance: 3.50,
@@ -171,6 +185,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Risk words alone do not qualify. Something must be balanced, and the subject is how bad it is to be wrong, not how likely the diagnosis is (task 4).",
     exampleEd: "A 55-year-old with atypical chest pain and a HEART score of 3. Reason explicitly about how low the acceptable miss rate for ACS is, and whether that threshold justifies observation rather than discharge.",
     examplePrimaryCare: "A 40-year-old with a new severe headache and a normal neurological examination. Weigh how bad a missed subarachnoid haemorrhage would be against the yield and cost of sending her to the ED today, and say where your own threshold sits.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.64,
       performanceVariance: 3.29,
@@ -188,6 +203,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not information simply acknowledged as missing (task 5), and not trusting a person's judgement or work (task 13). This is about the source, not the person.",
     exampleEd: "The only history for an unresponsive patient runs from a bystander to a paramedic to a triage note. Judge how much of that chain to believe, and decide what to re-check personally before committing.",
     examplePrimaryCare: "An outside note asserts a normal stress test 14 months ago, with no report attached and no images available. Decide whether that assertion can carry weight, or whether the study must be obtained or repeated.",
+    selectedForBenchmark: false,
     round1: {
       clinicalRelevance: 4.00,
       performanceVariance: 2.93,
@@ -205,6 +221,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not judging whether a source is trustworthy (task 7), and not ranking candidate diagnoses (task 4). The findings are already accepted as accurate.",
     exampleEd: "An 85-year-old's blood pressure is 104/60 — normal by population standards, but 40 points below his own documented baseline — and his creatinine has risen since a value six months ago. Interpret these findings together, and against his own baseline.",
     examplePrimaryCare: "The patient feels well, her A1c is 11.2, her home glucose log shows values in the 120s, and last year's A1c was 6.8. All three are accepted as accurate. Give a single coherent interpretation.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.14,
       performanceVariance: 3.14,
@@ -222,6 +239,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not looking up the patient's own chart data (task 3 or 8). A passage that merely sounds medical, with nothing retrieved and no gap named, does not qualify.",
     exampleEd: "A patient on apixaban has an intracranial bleed. Retrieve the reversal agent, the dose and the time window, and identify the point at which recall runs out and an outside source is needed.",
     examplePrimaryCare: "A 67-year-old asks about pneumococcal vaccination, with a prior dose at 63. Recall the current interval and sequence, and recognise that the schedule has changed and needs looking up.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.07,
       performanceVariance: 2.36,
@@ -239,6 +257,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Two or more futures must still be open. One settled endpoint, or a single pending result that will decide it, is task 11. Parking a to-do so as not to forget it is task 14.",
     exampleEd: "A probable small bowel obstruction, not yet confirmed. Plan forward: if the CT confirms it, surgery is called and a nasogastric tube goes in now; if it is negative, the patient goes home. Sequence the immediate work so that it holds up either way.",
     examplePrimaryCare: "A patient with early dementia is still driving and living alone. Both are tolerable today but likely to become unsafe as the dementia progresses. Project the coming year, then decide what to begin now rather than after a crash or a fall forces it — assessing decision-making capacity, addressing driving, identifying a surrogate decision-maker — and what to hold over to a follow-up visit.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 3.79,
       performanceVariance: 3.14,
@@ -256,6 +275,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "The reasoning toward the endpoint must be present, not the endpoint alone. Predicting a likely endpoint before the data is back is task 10. Bare words like admit or discharge are not codable.",
     exampleEd: "Flank pain with a known stone history, pain controlled and creatinine normal. Settle that the disposition hangs on the urinalysis alone, and say whether the CT is worth doing given that the result would not change management.",
     examplePrimaryCare: "Three weeks of low back pain with no red flags, and the patient is asking for an MRI. Decide whether the scan would change the plan, commit to a management course with a follow-up interval, and close the visit on that reasoning.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.15,
       performanceVariance: 3.31,
@@ -273,6 +293,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Not talking to other clinicians (task 13), and not judging whether the patient's account is reliable (task 7). Noticing a communication habit without changing anything is task 14.",
     exampleEd: "New atrial fibrillation in a patient who lives alone, has limited health literacy and no reliable transport. Let that situation change both the anticoagulation choice and the way return precautions are explained.",
     examplePrimaryCare: "An 82-year-old with an abnormal screening result says she does not want anything invasive. Work out what she actually understands and fears, and let that reshape both the plan and how the result is delivered.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.00,
       performanceVariance: 3.29,
@@ -290,6 +311,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "A colleague being present in the case is not enough. Trust, delegation, the worth of that person's information, or who is responsible must be at issue. Trusting a document or monitor is task 7.",
     exampleEd: "A second-year resident presents a syncope patient as low risk. Judge how far to trust this particular resident, decide whether to see the patient personally, and check the plan for what a resident at that level would likely miss.",
     examplePrimaryCare: "A patient's insulin was adjusted by an endocrinologist last week, and the assistant has recorded home readings that conflict with that plan. Work out who owns the prescription now and what the specialist is actually planning.",
+    selectedForBenchmark: false,
     round1: {
       clinicalRelevance: 3.50,
       performanceVariance: 3.21,
@@ -307,6 +329,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Only the clinician's own mind. Spending external resources or ranking patients is task 2. Handing work to someone else is task 13. Frustration at what others are doing is neither.",
     exampleEd: "The handoff framed the patient as a psych patient. Name that the framing has anchored you, deliberately reopen the case, and set a reminder so the pending glucose is not lost across the next interruption.",
     examplePrimaryCare: "At the end of a long appointment, notice your own engagement dropping and that you are rushing a complex patient. Slow down deliberately and re-check the medication list you have just reviewed.",
+    selectedForBenchmark: false,
     round1: {
       clinicalRelevance: 3.50,
       performanceVariance: 3.50,
@@ -324,6 +347,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "Set-level, not one patient. A single endpoint decision is task 11, a single severity read is task 1, and choosing who to see next as an attention call is task 2.",
     exampleEd: "Mid-shift sweep of the whole board. Bed 16 has blood running and imaging back, bed 36's labs are reassuring and she can wait, bed 22 has been waiting two hours on an ultrasound that has not moved. Confirm nothing on the list has been dropped.",
     examplePrimaryCare: "End-of-week panel sweep: three abnormal results with no documented follow-up, two referrals never scheduled, and one biopsy result still outstanding. Establish what has stalled and what needs action now.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 4.07,
       performanceVariance: 3.14,
@@ -341,6 +365,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "The constraint must belong to the system, not the patient. What the patient can afford or get to is task 12. Cost as one factor in choosing between treatments is task 11.",
     exampleEd: "The patient needs an MRI this hospital does not perform overnight, and the on-call neurosurgeon covers a second site. Reason about boarding until morning, transferring, or managing without the study.",
     examplePrimaryCare: "The guideline-preferred agent is not covered, prior authorisation takes three weeks, and the next endocrinology appointment is five months out. Work out which available route actually gets treatment started.",
+    selectedForBenchmark: true,
     round1: {
       clinicalRelevance: 3.86,
       performanceVariance: 3.36,
@@ -358,6 +383,7 @@ export const TASKS: RankingTask[] = [
     constructBoundary: "The subject is what the contact will cover, not what information to look for (task 3) or where the illness is heading (task 10). Deciding a problem belongs to someone else is task 13.",
     exampleEd: "A frequent attender arrives with five active complaints and a request for a work note. Fix which single problem this visit will carry, and say why the others are not opened today.",
     examplePrimaryCare: "The visit is booked as routine diabetes and hypertension follow-up. At minute 12 the patient mentions exertional chest tightness. Re-frame what this contact is now for, and what is left for next time.",
+    selectedForBenchmark: false,
     round1: {
       clinicalRelevance: 3.50,
       performanceVariance: 2.86,
@@ -371,14 +397,25 @@ export const TASKS: RankingTask[] = [
 
 export const TASK_COUNT = TASKS.length;
 
+/** Size of the adopted task set, and so where the cut line sits. */
+export const SELECTED_COUNT = TASKS.filter((task) => task.selectedForBenchmark).length;
+
 /**
- * The 17 tasks in the order every panellist is shown them: the study team's
- * Round 1 composite ranking, best first.
+ * The 17 tasks in the order every panellist is shown them: the adopted 12
+ * first, then the 5 that were not selected, each group by composite rank.
  *
  * Identical for everyone by design. Round 2 asks panellists to adjust a
- * proposed order rather than build one from scratch, so the order is the
+ * proposed set rather than build one from scratch, so the order is the
  * stimulus and must not vary between them.
+ *
+ * Note this is not composite order. Selection was a decision rather than a
+ * cutoff, so T1 (composite 3.16) sits at position 12 while T5 (3.62) sits at
+ * 13 -- the one place where a lower aggregate appears above a higher one. The
+ * instrument says so on the page, otherwise it reads as a defect.
  */
-export const PRESENTED_ORDER: RankingTask[] = [...TASKS].sort(
-  (a, b) => a.round1.tableS1Rank - b.round1.tableS1Rank
-);
+export const PRESENTED_ORDER: RankingTask[] = [...TASKS].sort((a, b) => {
+  if (a.selectedForBenchmark !== b.selectedForBenchmark) {
+    return a.selectedForBenchmark ? -1 : 1;
+  }
+  return a.round1.tableS1Rank - b.round1.tableS1Rank;
+});

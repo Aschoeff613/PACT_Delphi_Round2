@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { type RankingTask } from "@/lib/tasks";
+import { SELECTED_COUNT, type RankingTask } from "@/lib/tasks";
 
 type Props = {
   tasks: RankingTask[];
@@ -330,14 +330,15 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
           one another.
         </p>
         <p>
-          <strong>The list below is already ordered by your panel&rsquo;s Round 1 data</strong> —
-          highest aggregate score at position 1, lowest at position 17. This is what our team
-          arrived at as the strongest candidate tasks.
+          <strong>The list below is already ordered, and the top {SELECTED_COUNT} are the tasks
+          our team selected for the benchmark</strong> from your panel&rsquo;s Round 1 data. The
+          five below the line were not selected.
         </p>
         <p>
           <strong>Please read through it and move anything up or down that you think needs
-          adjusting.</strong> Leaving a task where it is counts as agreement, so there is no
-          need to move anything you already agree with.
+          adjusting</strong> — including across the line, if you think a task belongs in the
+          benchmark that we left out, or the other way round. Leaving a task where it is counts
+          as agreement, so there is no need to move anything you already agree with.
         </p>
         <ul className="hero-instructions">
           <li>Drag a bar by the handle or any empty part of it, or focus the handle and use ↑ / ↓</li>
@@ -347,8 +348,11 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
             that task, out of 5
           </li>
           <li>
-            The <strong>aggregate</strong> is the average of those three, and is what the list is
-            ordered by
+            The <strong>aggregate</strong> is the average of those three, out of 5
+          </li>
+          <li>
+            The order mostly follows the aggregate, but not strictly — selecting the benchmark was
+            a judgement, not a cutoff, so one task sits above another with a higher aggregate
           </li>
           <li>Every panellist sees this same starting order</li>
           <li>All 17 positions are submitted together — nothing saves until you submit</li>
@@ -358,6 +362,19 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
 
       <div className="rank-layout">
         <ol className="rank-list">
+          {/* Fixed boundary between position 12 and 13. Offset is computed from
+              the same STRIDE the drag uses, so the two cannot drift apart, and
+              it is inert to pointer events so it never blocks a drag. */}
+          <li
+            className="rank-cutline"
+            style={{ top: SELECTED_COUNT * STRIDE - ROW_GAP / 2 }}
+            aria-hidden="true"
+          >
+            <span>
+              Everything above this line is the proposed {SELECTED_COUNT}-task benchmark
+            </span>
+          </li>
+
           {order.map((task, index) => {
             const isDragging = dragCode === task.taskCode;
             const isOpen = activePopout === task.taskCode;
@@ -369,7 +386,9 @@ export function RankingBoard({ tasks, startOrder, reviewerName, submittedAt }: P
               <li
                 key={task.taskCode}
                 ref={(node) => registerRow(task.taskCode, node)}
-                className={`rank-row${isDragging ? " is-dragging" : ""}${isOpen ? " is-open" : ""}`}
+                className={`rank-row${isDragging ? " is-dragging" : ""}${isOpen ? " is-open" : ""}${
+                  task.selectedForBenchmark ? " was-selected" : " was-not-selected"
+                }`}
                 aria-label={`Position ${index + 1} of ${order.length}: ${task.title}. Round 1 aggregate ${task.round1.composite.toFixed(2)} of 5. Means: clinical relevance ${task.round1.clinicalRelevance.toFixed(2)}, performance variance ${task.round1.performanceVariance.toFixed(2)}, AI augmentation ${task.round1.aiAugmentation.toFixed(2)}, out of 5.`}
               >
                 <div
