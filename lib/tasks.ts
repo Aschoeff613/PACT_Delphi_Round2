@@ -333,7 +333,7 @@ export const TASKS: RankingTask[] = [
     guidingQuestion: "What is my own mind doing, and how do I manage it?",
     definition: "Watching their own reasoning, confidence and biases, and deliberately managing their own attention, effort and memory.",
     constructBoundary: "Only the clinician's own mind. Spending external resources or ranking patients is task 2. Handing work to someone else is task 13. Frustration at what others are doing is neither.",
-    exampleEd: "A patient signed out as \"intoxicated, sleeping it off\" has been on the board four hours, and you notice you have walked past the room twice without looking in. Say explicitly that you have anchored on the handoff label, and name what it would take to change your mind.",
+    exampleEd: "A patient signed out as \"intoxicated, sleeping it off\" has been on the board four hours, and you notice you have walked past the room twice without looking in. Recognising that you have anchored on the handoff label, name what it would take to change your mind.",
     examplePrimaryCare: "At the end of a long appointment, notice your own engagement dropping and that you are rushing a complex patient. Slow down deliberately and re-check the medication list you have just reviewed.",
     selectedForBenchmark: false,
     round1: {
