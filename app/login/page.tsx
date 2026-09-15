@@ -11,6 +11,7 @@ type LoginPageProps = {
 const INSTITUTIONS = [
   "Stanford Medicine",
   "Beth Israel Deaconess Medical Center",
+  "Erasmus Medical Center",
   "Harvard Medical School",
   "Massachusetts General Hospital",
   "Brigham and Women's Hospital",
