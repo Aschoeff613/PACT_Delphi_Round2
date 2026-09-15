@@ -13,9 +13,9 @@ Live at https://pact-delphi-round2.vercel.app
 
 | Repository | Role |
 | --- | --- |
-| [expert-case-review-PACT](https://github.com/perezcodex/expert-case-review-PACT) | The **Round 1** instrument — panelists rated each task on three 1–5 scales |
+| [PACT_Delphi_Round1](https://github.com/Aschoeff613/PACT_Delphi_Round1) | The **Round 1** instrument — panelists rated each task on three 1–5 scales |
 | **this repository** | The **Round 2** instrument — panelists rank all 17 tasks against one another |
-| [PACT_Delphi](https://github.com/Aschoeff613/PACT_Delphi) | The **analysis** — R pipeline for consensus and agreement statistics. No interface code |
+| [PACT_Delphi_Analysis](https://github.com/Aschoeff613/PACT_Delphi_Analysis) | The **analysis** — R pipeline for both rounds. No interface code |
 | [PACT_Literature_Review](https://github.com/Aschoeff613/PACT_Literature_Review) | Task taxonomy derivation, including `taxonomy/pact_17_tasks.json` |
 
 Deployed separately from the Round 1 instrument but against the **same Supabase
@@ -100,7 +100,8 @@ order by rev.code, rr.rank;
 ```
 
 Long format, one row per panelist × task — the shape `R/02_load_clean.R` in
-[PACT_Delphi](https://github.com/Aschoeff613/PACT_Delphi) already reads. Note
+[PACT_Delphi_Analysis](https://github.com/Aschoeff613/PACT_Delphi_Analysis)
+already reads. Note
 that the existing loader expects the three Round 1 rating columns and will
 reject this file until a Round 2 loader is added; the ranking statistics (mean
 rank, Kendall's W, Borda aggregation) are not yet written.

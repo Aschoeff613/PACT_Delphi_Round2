@@ -7,7 +7,8 @@
 -- through 17.
 --
 -- Stored long -- one row per reviewer x task -- to match the shape the
--- PACT_Delphi R pipeline already reads (reviewer_code, task_code, task_name,
+-- PACT_Delphi_Analysis R pipeline already reads (reviewer_code, task_code,
+-- task_name,
 -- one value column). A ranking is all-or-nothing: there is no partial state to
 -- represent, so unlike `ratings` there is no autosave and no nullable value.
 
